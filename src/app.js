@@ -1,7 +1,10 @@
 import * as yup from 'yup';
 import onChange from 'on-change';
 import i18n from 'i18next';
+import axios from 'axios';
 import resources from './locales/ru.js';
+import parser from './parser.js';
+import render from './render.js';
 
 const app = (i18nextInstance) => {
   yup.setLocale({
@@ -14,46 +17,6 @@ const app = (i18nextInstance) => {
   });
   const isValid = (enteredUrl, urls) => yup.string().url().notOneOf(urls).validate(enteredUrl);
 
-  const handleProcessState = (elements, processState) => {
-    switch (processState) {
-      case 'error':
-        elements.rssUrl.classList.add('is-invalid');
-        break;
-
-      case 'waiting':
-        elements.rssUrl.classList.remove('is-invalid');
-        elements.rssUrl.focus();
-        elements.form.reset();
-        break;
-
-      case 'filling':
-        break;
-
-      case 'success':
-        break;
-
-      default:
-        throw new Error(`Unknown process state: ${processState}`);
-    }
-  };
-  const renderErrors = (elements, err) => {
-    const feedbackElement = elements.feedback;
-    feedbackElement.textContent = i18nextInstance.t(`feedback.error.${err}`);
-  };
-  const render = (elements) => (path, value) => {
-    switch (path) {
-      case 'form.processState':
-        handleProcessState(elements, value);
-        break;
-
-      case 'form.errors':
-        renderErrors(elements, value);
-        break;
-
-      default:
-        break;
-    }
-  };
   const elements = {
     form: document.querySelector('.rss-form'),
     rssUrl: document.querySelector('#url-input'),
@@ -66,6 +29,7 @@ const app = (i18nextInstance) => {
   const state = {
     form: {
       enteredUrl: '',
+      addedRss: {},
       valid: true,
       processState: 'filling',
       processError: null,
@@ -73,7 +37,9 @@ const app = (i18nextInstance) => {
       addedUrls: [],
     },
   };
-  const watchedState = onChange(state, render(elements));
+
+  const watchedState = onChange(state, render(elements, i18nextInstance));
+
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -83,10 +49,17 @@ const app = (i18nextInstance) => {
       .then(() => {
         state.form.addedUrls.push(state.form.enteredUrl);
         watchedState.form.processState = 'waiting';
-        // console.log(state.form.addedUrls);
+        axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(state.form.enteredUrl)}`)
+          .then((response) => {
+            watchedState.form.addedRss = parser(response);
+            watchedState.form.processState = 'success';
+          })
+          .catch((err) => {
+            watchedState.form.processState = 'error';
+            watchedState.form.errors = err.name;
+          });
       })
       .catch((err) => {
-        // console.log(err);
         const [{ key }] = err.errors;
         watchedState.form.processState = 'error';
         watchedState.form.errors = key;
