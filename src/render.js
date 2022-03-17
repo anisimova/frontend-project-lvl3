@@ -36,8 +36,7 @@ const renderErrors = (elements, err, i18nextInstance) => {
   const feedbackElement = elements.feedback;
   feedbackElement.textContent = i18nextInstance.t(`feedback.${err}`);
 };
-
-const renderRss = ({ posts, feeds }, rss) => {
+const renderBlockFeeds = (feeds) => {
   const cardFeeds = document.createElement('div');
   cardFeeds.classList.add('card', 'border-0');
   const cardTitleFeeds = document.createElement('div');
@@ -47,22 +46,13 @@ const renderRss = ({ posts, feeds }, rss) => {
   titleFeeds.textContent = 'Фиды';
   const listFeeds = document.createElement('ul');
   listFeeds.classList.add('list-group', 'border-0', 'rounded-0');
-  const listItem = document.createElement('li');
-  listItem.classList.add('list-group-item', 'border-0', 'border-end-0');
-  const listItemTitle = document.createElement('h3');
-  listItemTitle.classList.add('h6', 'm-0');
-  listItemTitle.textContent = rss.feed.feedTitle;
-  const listItemDescription = document.createElement('p');
-  listItemDescription.classList.add('m-0', 'small', 'text-black-50');
-  listItemDescription.textContent = rss.feed.feedDescription;
   feeds.prepend(cardFeeds);
   cardFeeds.prepend(cardTitleFeeds);
   cardTitleFeeds.prepend(titleFeeds);
   cardFeeds.append(listFeeds);
-  listFeeds.append(listItem);
-  listItem.append(listItemTitle);
-  listItem.append(listItemDescription);
-
+  return listFeeds;
+};
+const renderBlockPosts = (posts) => {
   const cardPosts = document.createElement('div');
   cardPosts.classList.add('card', 'border-0');
   const cardTitlePosts = document.createElement('div');
@@ -76,6 +66,22 @@ const renderRss = ({ posts, feeds }, rss) => {
   cardPosts.prepend(cardTitlePosts);
   cardTitlePosts.prepend(titlePosts);
   cardPosts.append(listPosts);
+  return listPosts;
+};
+const renderRss = ({ posts, feeds }, rss) => {
+  const listFeeds = document.querySelector('div.feeds ul') === null ? renderBlockFeeds(feeds) : document.querySelector('div.feeds ul');
+  const listItem = document.createElement('li');
+  listItem.classList.add('list-group-item', 'border-0', 'border-end-0');
+  const listItemTitle = document.createElement('h3');
+  listItemTitle.classList.add('h6', 'm-0');
+  listItemTitle.textContent = rss.feed.feedTitle;
+  const listItemDescription = document.createElement('p');
+  listItemDescription.classList.add('m-0', 'small', 'text-black-50');
+  listItemDescription.textContent = rss.feed.feedDescription;
+  listFeeds.prepend(listItem);
+  listItem.append(listItemTitle);
+  listItem.append(listItemDescription);
+  const listPosts = document.querySelector('div.posts ul') === null ? renderBlockPosts(posts) : document.querySelector('div.posts ul');
   rss.posts.forEach((post) => {
     const postItem = document.createElement('li');
     postItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
@@ -93,7 +99,7 @@ const renderRss = ({ posts, feeds }, rss) => {
     postPreviewBtn.setAttribute('data-bs-toggle', 'modal');
     postPreviewBtn.setAttribute('data-bs-target', '#modal');
     postPreviewBtn.textContent = 'Посмотр';
-    listPosts.append(postItem);
+    listPosts.prepend(postItem);
     postItem.append(postItemLink);
     postItem.append(postPreviewBtn);
   });

@@ -47,11 +47,11 @@ const app = (i18nextInstance) => {
     state.form.enteredUrl = dataForm.url;
     isValid(state.form.enteredUrl, state.form.addedUrls)
       .then(() => {
-        state.form.addedUrls.push(state.form.enteredUrl);
         watchedState.form.processState = 'waiting';
         axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(state.form.enteredUrl)}`)
           .then((response) => {
             watchedState.form.addedRss = parser(response);
+            state.form.addedUrls.push(state.form.enteredUrl);
             watchedState.form.processState = 'success';
           })
           .catch((err) => {
