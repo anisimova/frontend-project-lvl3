@@ -3,7 +3,7 @@ export default {
     translation: {
       feedback: {
         success: 'RSS успешно загружен',
-        invalidUrl: 'Ресурс не содержит валидный RSS',
+        invalidUrl: 'Ссылка должна быть валидным URL',
         notOneOf: 'RSS уже существует',
         Error: 'Ошибка сети',
         TypeError: 'Ресурс не содержит валидный RSS',

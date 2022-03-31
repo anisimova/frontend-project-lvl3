@@ -24,17 +24,25 @@ const app = (i18nextInstance) => {
     feedback: document.querySelector('.feedback'),
     posts: document.querySelector('.posts'),
     feeds: document.querySelector('.feeds'),
+    btns: document.querySelectorAll('.posts .btn'),
+    modalTitle: document.querySelector('.modal-title'),
+    modalBody: document.querySelector('.modal-body'),
+    modalUrl: document.querySelector('.modal-footer .full-article'),
   };
   // console.log(elements.rssUrl);
   const state = {
     form: {
       enteredUrl: '',
-      addedRss: {},
       valid: true,
       processState: 'filling',
       processError: null,
       errors: {},
       addedUrls: [],
+    },
+    rss: {
+      feeds: [],
+      posts: [],
+      readPostsId: [],
     },
   };
 
@@ -50,8 +58,11 @@ const app = (i18nextInstance) => {
         watchedState.form.processState = 'waiting';
         axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(state.form.enteredUrl)}`)
           .then((response) => {
-            watchedState.form.addedRss = parser(response);
             state.form.addedUrls.push(state.form.enteredUrl);
+            const { feed, posts } = parser(response);
+            feed.rssUrl = state.form.enteredUrl;
+            watchedState.rss.posts = state.rss.posts.concat(posts);
+            watchedState.rss.feeds = state.rss.feeds.concat(feed);
             watchedState.form.processState = 'success';
           })
           .catch((err) => {
@@ -64,6 +75,34 @@ const app = (i18nextInstance) => {
         watchedState.form.processState = 'error';
         watchedState.form.errors = key;
       });
+  });
+  const update = () => {
+    setTimeout(() => {
+      state.rss.feeds.forEach(({ rssUrl }) => {
+        axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(rssUrl)}`)
+          .then((response) => {
+            const { posts } = parser(response);
+            const addedPostLinks = state.rss.posts.map(({ itemLink }) => itemLink);
+            const newPosts = posts.filter(({ itemLink }) => !addedPostLinks.includes(itemLink));
+            watchedState.rss.posts = state.rss.posts.concat(newPosts);
+          })
+          .catch((err) => {
+            watchedState.form.processState = 'error';
+            watchedState.form.errors = err.name;
+          });
+      });
+      update();
+    }, 5000);
+  };
+  update();
+  elements.posts.addEventListener('click', (e) => {
+    e.preventDefault();
+    const clickedPost = state.rss.posts.filter(({ itemId }) => itemId === e.target.dataset.id);
+    watchedState.modalIdPost = clickedPost;
+    watchedState.rss.posts = state.rss.posts.map((post) => {
+      if (post.itemId === e.target.dataset.id) return { ...post, read: true };
+      return post;
+    });
   });
 };
 const runApp = () => {

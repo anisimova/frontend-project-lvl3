@@ -37,6 +37,7 @@ const renderErrors = (elements, err, i18nextInstance) => {
   feedbackElement.textContent = i18nextInstance.t(`feedback.${err}`);
 };
 const renderBlockFeeds = (feeds) => {
+  if (document.querySelector('.feeds .list-group')) return document.querySelector('.feeds .list-group');
   const cardFeeds = document.createElement('div');
   cardFeeds.classList.add('card', 'border-0');
   const cardTitleFeeds = document.createElement('div');
@@ -53,6 +54,7 @@ const renderBlockFeeds = (feeds) => {
   return listFeeds;
 };
 const renderBlockPosts = (posts) => {
+  if (document.querySelector('.posts .list-group')) return document.querySelector('.posts .list-group');
   const cardPosts = document.createElement('div');
   cardPosts.classList.add('card', 'border-0');
   const cardTitlePosts = document.createElement('div');
@@ -68,25 +70,35 @@ const renderBlockPosts = (posts) => {
   cardPosts.append(listPosts);
   return listPosts;
 };
-const renderRss = ({ posts, feeds }, rss) => {
-  const listFeeds = document.querySelector('div.feeds ul') === null ? renderBlockFeeds(feeds) : document.querySelector('div.feeds ul');
-  const listItem = document.createElement('li');
-  listItem.classList.add('list-group-item', 'border-0', 'border-end-0');
-  const listItemTitle = document.createElement('h3');
-  listItemTitle.classList.add('h6', 'm-0');
-  listItemTitle.textContent = rss.feed.feedTitle;
-  const listItemDescription = document.createElement('p');
-  listItemDescription.classList.add('m-0', 'small', 'text-black-50');
-  listItemDescription.textContent = rss.feed.feedDescription;
-  listFeeds.prepend(listItem);
-  listItem.append(listItemTitle);
-  listItem.append(listItemDescription);
-  const listPosts = document.querySelector('div.posts ul') === null ? renderBlockPosts(posts) : document.querySelector('div.posts ul');
-  rss.posts.forEach((post) => {
+const renderFeeds = ({ feeds }, allFeeds) => {
+  const listFeeds = renderBlockFeeds(feeds);
+  listFeeds.textContent = '';
+  allFeeds.forEach(({ feedTitle, feedDescription }) => {
+    const listItem = document.createElement('li');
+    listItem.classList.add('list-group-item', 'border-0', 'border-end-0');
+    const listItemTitle = document.createElement('h3');
+    listItemTitle.classList.add('h6', 'm-0');
+    listItemTitle.textContent = feedTitle;
+    const listItemDescription = document.createElement('p');
+    listItemDescription.classList.add('m-0', 'small', 'text-black-50');
+    listItemDescription.textContent = feedDescription;
+    listFeeds.prepend(listItem);
+    listItem.append(listItemTitle);
+    listItem.append(listItemDescription);
+  });
+};
+const renderPosts = ({ posts }, allPosts) => {
+  const listPosts = renderBlockPosts(posts);
+  listPosts.textContent = '';
+  allPosts.forEach((post) => {
     const postItem = document.createElement('li');
     postItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
     const postItemLink = document.createElement('a');
-    postItemLink.classList.add('fw-bold');
+    if (post.read) {
+      postItemLink.classList.add('fw-normal', 'link-secondary');
+    } else {
+      postItemLink.classList.add('fw-bold');
+    }
     postItemLink.setAttribute('data-id', post.itemId);
     postItemLink.setAttribute('target', '_blank');
     postItemLink.setAttribute('rel', 'noopener noreferrer');
@@ -105,8 +117,16 @@ const renderRss = ({ posts, feeds }, rss) => {
   });
 };
 
+const renderModal = (elements, post) => {
+  const title = elements.modalTitle;
+  const body = elements.modalBody;
+  const linkFullPost = elements.modalUrl;
+  title.textContent = post[0].itemTitle;
+  body.textContent = post[0].itemDescription;
+  linkFullPost.href = post[0].itemLink;
+};
+
 const render = (elements, i18nextInstance) => (path, value) => {
-  // console.log(path, '\n', value);
   switch (path) {
     case 'form.processState':
       handleProcessState(elements, value, i18nextInstance);
@@ -116,12 +136,20 @@ const render = (elements, i18nextInstance) => (path, value) => {
       renderErrors(elements, value, i18nextInstance);
       break;
 
-    case 'form.addedRss':
-      renderRss(elements, value);
+    case 'modalIdPost':
+      renderModal(elements, value);
+      break;
+
+    case 'rss.feeds':
+      renderFeeds(elements, value);
+      break;
+
+    case 'rss.posts':
+      renderPosts(elements, value);
       break;
 
     default:
-      break;
+      throw new Error(`Unknown process state: ${path}`);
   }
 };
 
