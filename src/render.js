@@ -3,7 +3,7 @@ const handleProcessState = (elements, processState, i18nextInstance) => {
   const feedbackElement = elements.feedback;
   switch (processState) {
     case 'error':
-      ByteLengthQueuingStrategy.disabled = false;
+      btn.disabled = false;
       elements.rssUrl.classList.add('is-invalid');
       elements.feedback.classList.remove('text-success');
       elements.feedback.classList.add('text-danger');
