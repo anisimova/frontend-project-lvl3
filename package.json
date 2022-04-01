@@ -27,13 +27,13 @@
     "eslint": "^8.8.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.25.4",
-    "html-webpack-plugin": "^5.5.0",
     "style-loader": "^3.3.1",
     "webpack": "^5.68.0",
     "webpack-cli": "^4.9.2",
     "webpack-dev-server": "^4.7.4"
   },
   "dependencies": {
+    "html-webpack-plugin": "^5.5.0",
     "@popperjs/core": "^2.11.2",
     "axios": "^0.26.0",
     "bootstrap": "^5.1.3",

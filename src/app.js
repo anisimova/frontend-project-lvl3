@@ -86,9 +86,9 @@ const app = (i18nextInstance) => {
             const newPosts = posts.filter(({ itemLink }) => !addedPostLinks.includes(itemLink));
             watchedState.rss.posts = state.rss.posts.concat(newPosts);
           })
-          .catch((err) => {
-            watchedState.form.processState = 'error';
-            watchedState.form.errors = err.name;
+          .catch(() => {
+            // watchedState.form.processState = 'error';
+            // watchedState.form.errors = err.name;
           });
       });
       update();
