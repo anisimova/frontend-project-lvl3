@@ -4,7 +4,7 @@ import i18n from 'i18next';
 import axios from 'axios';
 import resources from './locales/ru.js';
 import parser from './parser.js';
-import render from './render.js';
+import render from './view.js';
 
 const app = (i18nextInstance) => {
   yup.setLocale({
