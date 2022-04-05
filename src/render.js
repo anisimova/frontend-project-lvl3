@@ -1,6 +1,7 @@
 const handleProcessState = (elements, processState, i18nextInstance) => {
   const btn = elements.submitButton;
   const feedbackElement = elements.feedback;
+  const inputUrlField = elements.rssUrl;
   switch (processState) {
     case 'error':
       btn.disabled = false;
@@ -13,7 +14,7 @@ const handleProcessState = (elements, processState, i18nextInstance) => {
       btn.disabled = true;
       elements.rssUrl.classList.remove('is-invalid');
       elements.rssUrl.focus();
-      elements.form.reset();
+      inputUrlField.value = '';
       break;
 
     case 'filling':
