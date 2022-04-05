@@ -5,15 +5,17 @@ const handleProcessState = (elements, processState, i18nextInstance) => {
   switch (processState) {
     case 'error':
       btn.disabled = false;
-      elements.rssUrl.classList.add('is-invalid');
+      inputUrlField.removeAttribute('readonly');
+      inputUrlField.classList.add('is-invalid');
       elements.feedback.classList.remove('text-success');
       elements.feedback.classList.add('text-danger');
       break;
 
     case 'waiting':
       btn.disabled = true;
-      elements.rssUrl.classList.remove('is-invalid');
-      elements.rssUrl.focus();
+      inputUrlField.setAttribute('readonly', '');
+      inputUrlField.classList.remove('is-invalid');
+      inputUrlField.focus();
       inputUrlField.value = '';
       break;
 
@@ -23,6 +25,7 @@ const handleProcessState = (elements, processState, i18nextInstance) => {
 
     case 'success':
       btn.disabled = false;
+      inputUrlField.removeAttribute('readonly');
       feedbackElement.classList.remove('text-danger');
       feedbackElement.classList.add('text-success');
       feedbackElement.textContent = i18nextInstance.t('feedback.success');
