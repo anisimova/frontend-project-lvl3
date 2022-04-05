@@ -126,6 +126,7 @@ const renderModal = (elements, post) => {
   const title = elements.modalTitle;
   const body = elements.modalBody;
   const linkFullPost = elements.modalUrl;
+  body.classList.add('text-break');
   title.textContent = post[0].itemTitle;
   body.textContent = post[0].itemDescription;
   linkFullPost.href = post[0].itemLink;
