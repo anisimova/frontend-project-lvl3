@@ -21,6 +21,6 @@ export default (response) => {
       itemLink: itemLink.textContent,
       itemId: _.uniqueId('post_'),
     };
-  });
+  }).reverse();
   return { feed, posts };
 };

@@ -84,6 +84,7 @@ const app = (i18nextInstance) => {
             const { posts } = parser(response);
             const addedPostLinks = state.rss.posts.map(({ itemLink }) => itemLink);
             const newPosts = posts.filter(({ itemLink }) => !addedPostLinks.includes(itemLink));
+            console.log(state.rss.posts, '\n', newPosts);
             watchedState.rss.posts = state.rss.posts.concat(newPosts);
           })
           .catch(() => {
