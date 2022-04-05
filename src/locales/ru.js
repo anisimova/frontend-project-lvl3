@@ -8,6 +8,9 @@ export default {
         Error: 'Ошибка сети',
         TypeError: 'Ресурс не содержит валидный RSS',
       },
+      buttons: {
+        viewing: 'Просмотр',
+      },
     },
   },
 };

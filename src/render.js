@@ -91,7 +91,7 @@ const renderFeeds = ({ feeds }, allFeeds) => {
     listItem.append(listItemDescription);
   });
 };
-const renderPosts = ({ posts }, allPosts) => {
+const renderPosts = ({ posts }, allPosts, i18nextInstance) => {
   const listPosts = renderBlockPosts(posts);
   listPosts.textContent = '';
   allPosts.forEach((post) => {
@@ -114,7 +114,8 @@ const renderPosts = ({ posts }, allPosts) => {
     postPreviewBtn.setAttribute('data-id', post.itemId);
     postPreviewBtn.setAttribute('data-bs-toggle', 'modal');
     postPreviewBtn.setAttribute('data-bs-target', '#modal');
-    postPreviewBtn.textContent = 'Посмотр';
+    postPreviewBtn.setAttribute('name', i18nextInstance.t('buttons.viewing'));
+    postPreviewBtn.textContent = i18nextInstance.t('buttons.viewing');
     listPosts.prepend(postItem);
     postItem.append(postItemLink);
     postItem.append(postPreviewBtn);
@@ -149,7 +150,7 @@ const render = (elements, i18nextInstance) => (path, value) => {
       break;
 
     case 'rss.posts':
-      renderPosts(elements, value);
+      renderPosts(elements, value, i18nextInstance);
       break;
 
     default:
