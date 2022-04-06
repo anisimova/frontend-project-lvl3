@@ -75,8 +75,8 @@ const renderBlockPosts = (posts) => {
   return listPosts;
 };
 const renderFeeds = ({ feeds }, allFeeds) => {
-  const listFeeds = renderBlockFeeds(feeds);
-  listFeeds.textContent = '';
+  const viewFeeds = renderBlockFeeds(feeds);
+  viewFeeds.textContent = '';
   allFeeds.forEach(({ feedTitle, feedDescription }) => {
     const listItem = document.createElement('li');
     listItem.classList.add('list-group-item', 'border-0', 'border-end-0');
@@ -86,14 +86,14 @@ const renderFeeds = ({ feeds }, allFeeds) => {
     const listItemDescription = document.createElement('p');
     listItemDescription.classList.add('m-0', 'small', 'text-black-50');
     listItemDescription.textContent = feedDescription;
-    listFeeds.prepend(listItem);
+    viewFeeds.prepend(listItem);
     listItem.append(listItemTitle);
     listItem.append(listItemDescription);
   });
 };
 const renderPosts = ({ posts }, allPosts, i18nextInstance) => {
-  const listPosts = renderBlockPosts(posts);
-  listPosts.textContent = '';
+  const viewPosts = renderBlockPosts(posts);
+  viewPosts.textContent = '';
   allPosts.forEach((post) => {
     const postItem = document.createElement('li');
     postItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
@@ -116,7 +116,7 @@ const renderPosts = ({ posts }, allPosts, i18nextInstance) => {
     postPreviewBtn.setAttribute('data-bs-target', '#modal');
     postPreviewBtn.setAttribute('name', i18nextInstance.t('buttons.viewing'));
     postPreviewBtn.textContent = i18nextInstance.t('buttons.viewing');
-    listPosts.prepend(postItem);
+    viewPosts.prepend(postItem);
     postItem.append(postItemLink);
     postItem.append(postPreviewBtn);
   });

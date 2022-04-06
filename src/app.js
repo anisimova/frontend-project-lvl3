@@ -84,12 +84,11 @@ const app = (i18nextInstance) => {
             const { posts } = parser(response);
             const addedPostLinks = state.rss.posts.map(({ itemLink }) => itemLink);
             const newPosts = posts.filter(({ itemLink }) => !addedPostLinks.includes(itemLink));
-            console.log(state.rss.posts, '\n', newPosts);
             watchedState.rss.posts = state.rss.posts.concat(newPosts);
           })
-          .catch(() => {
-            // watchedState.form.processState = 'error';
-            // watchedState.form.errors = err.name;
+          .catch((err) => {
+            watchedState.form.processState = 'error';
+            watchedState.form.errors = err.name;
           });
       });
       update();
