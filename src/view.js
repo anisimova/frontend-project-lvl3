@@ -36,11 +36,11 @@ const handleProcessState = (elements, processState, i18nextInstance) => {
   }
 };
 
-const renderErrors = (elements, err, i18nextInstance) => {
+const renderingErrors = (elements, err, i18nextInstance) => {
   const feedbackElement = elements.feedback;
   feedbackElement.textContent = i18nextInstance.t(`feedback.${err}`);
 };
-const renderBlockFeeds = (feeds) => {
+const renderingBlockFeeds = (feeds) => {
   if (document.querySelector('.feeds .list-group')) return document.querySelector('.feeds .list-group');
   const cardFeeds = document.createElement('div');
   cardFeeds.classList.add('card', 'border-0');
@@ -57,7 +57,7 @@ const renderBlockFeeds = (feeds) => {
   cardFeeds.append(listFeeds);
   return listFeeds;
 };
-const renderBlockPosts = (posts) => {
+const renderingBlockPosts = (posts) => {
   if (document.querySelector('.posts .list-group')) return document.querySelector('.posts .list-group');
   const cardPosts = document.createElement('div');
   cardPosts.classList.add('card', 'border-0');
@@ -74,8 +74,8 @@ const renderBlockPosts = (posts) => {
   cardPosts.append(listPosts);
   return listPosts;
 };
-const renderFeeds = ({ feeds }, allFeeds) => {
-  const viewFeeds = renderBlockFeeds(feeds);
+const renderingFeeds = ({ feeds }, allFeeds) => {
+  const viewFeeds = renderingBlockFeeds(feeds);
   viewFeeds.textContent = '';
   allFeeds.forEach(({ feedTitle, feedDescription }) => {
     const listItem = document.createElement('li');
@@ -91,8 +91,8 @@ const renderFeeds = ({ feeds }, allFeeds) => {
     listItem.append(listItemDescription);
   });
 };
-const renderPosts = ({ posts }, allPosts, i18nextInstance) => {
-  const viewPosts = renderBlockPosts(posts);
+const renderingPosts = ({ posts }, allPosts, i18nextInstance) => {
+  const viewPosts = renderingBlockPosts(posts);
   viewPosts.textContent = '';
   allPosts.forEach((post) => {
     const postItem = document.createElement('li');
@@ -122,7 +122,7 @@ const renderPosts = ({ posts }, allPosts, i18nextInstance) => {
   });
 };
 
-const renderModal = (elements, post) => {
+const renderingModal = (elements, post) => {
   const title = elements.modalTitle;
   const body = elements.modalBody;
   const linkFullPost = elements.modalUrl;
@@ -139,19 +139,19 @@ const view = (elements, i18nextInstance) => (path, value) => {
       break;
 
     case 'form.errors':
-      renderErrors(elements, value, i18nextInstance);
+      renderingErrors(elements, value, i18nextInstance);
       break;
 
     case 'modalIdPost':
-      renderModal(elements, value);
+      renderingModal(elements, value);
       break;
 
     case 'rss.feeds':
-      renderFeeds(elements, value);
+      renderingFeeds(elements, value);
       break;
 
     case 'rss.posts':
-      renderPosts(elements, value, i18nextInstance);
+      renderingPosts(elements, value, i18nextInstance);
       break;
 
     default:
