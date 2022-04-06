@@ -132,7 +132,7 @@ const renderModal = (elements, post) => {
   linkFullPost.href = post[0].itemLink;
 };
 
-const render = (elements, i18nextInstance) => (path, value) => {
+const view = (elements, i18nextInstance) => (path, value) => {
   switch (path) {
     case 'form.processState':
       handleProcessState(elements, value, i18nextInstance);
@@ -159,4 +159,4 @@ const render = (elements, i18nextInstance) => (path, value) => {
   }
 };
 
-export default render;
+export default view;
