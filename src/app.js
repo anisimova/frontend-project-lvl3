@@ -4,7 +4,7 @@ import i18n from 'i18next';
 import axios from 'axios';
 import resources from './locales/ru.js';
 import parser from './parser.js';
-import view from './view.js';
+import render from './render.js';
 
 const app = (i18nextInstance) => {
   yup.setLocale({
@@ -46,7 +46,7 @@ const app = (i18nextInstance) => {
     },
   };
 
-  const watchedState = onChange(state, view(elements, i18nextInstance));
+  const watchedState = onChange(state, render(elements, i18nextInstance));
 
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();

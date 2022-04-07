@@ -36,11 +36,11 @@ const handleProcessState = (elements, processState, i18nextInstance) => {
   }
 };
 
-const renderingErrors = (elements, err, i18nextInstance) => {
+const renderErrors = (elements, err, i18nextInstance) => {
   const feedbackElement = elements.feedback;
   feedbackElement.textContent = i18nextInstance.t(`feedback.${err}`);
 };
-const renderingBlockFeeds = (feeds) => {
+const renderBlockFeeds = (feeds) => {
   if (document.querySelector('.feeds .list-group')) return document.querySelector('.feeds .list-group');
   const cardFeeds = document.createElement('div');
   cardFeeds.classList.add('card', 'border-0');
@@ -57,7 +57,7 @@ const renderingBlockFeeds = (feeds) => {
   cardFeeds.append(listFeeds);
   return listFeeds;
 };
-const renderingBlockPosts = (posts) => {
+const renderBlockPosts = (posts) => {
   if (document.querySelector('.posts .list-group')) return document.querySelector('.posts .list-group');
   const cardPosts = document.createElement('div');
   cardPosts.classList.add('card', 'border-0');
@@ -74,8 +74,8 @@ const renderingBlockPosts = (posts) => {
   cardPosts.append(listPosts);
   return listPosts;
 };
-const renderingFeeds = ({ feeds }, allFeeds) => {
-  const view = renderingBlockFeeds(feeds);
+const renderFeeds = ({ feeds }, allFeeds) => {
+  const view = renderBlockFeeds(feeds);
   view.textContent = '';
   allFeeds.forEach(({ feedTitle, feedDescription }) => {
     const listItem = document.createElement('li');
@@ -91,8 +91,8 @@ const renderingFeeds = ({ feeds }, allFeeds) => {
     listItem.append(listItemDescription);
   });
 };
-const renderingPosts = ({ posts }, allPosts, i18nextInstance) => {
-  const view = renderingBlockPosts(posts);
+const renderPosts = ({ posts }, allPosts, i18nextInstance) => {
+  const view = renderBlockPosts(posts);
   view.textContent = '';
   allPosts.forEach((post) => {
     const postItem = document.createElement('li');
@@ -122,7 +122,7 @@ const renderingPosts = ({ posts }, allPosts, i18nextInstance) => {
   });
 };
 
-const renderingModal = (elements, post) => {
+const renderModal = (elements, post) => {
   const title = elements.modalTitle;
   const body = elements.modalBody;
   const linkFullPost = elements.modalUrl;
@@ -132,26 +132,26 @@ const renderingModal = (elements, post) => {
   linkFullPost.href = post[0].itemLink;
 };
 
-const view = (elements, i18nextInstance) => (path, value) => {
+const render = (elements, i18nextInstance) => (path, value) => {
   switch (path) {
     case 'form.processState':
       handleProcessState(elements, value, i18nextInstance);
       break;
 
     case 'form.errors':
-      renderingErrors(elements, value, i18nextInstance);
+      renderErrors(elements, value, i18nextInstance);
       break;
 
     case 'modalIdPost':
-      renderingModal(elements, value);
+      renderModal(elements, value);
       break;
 
     case 'rss.feeds':
-      renderingFeeds(elements, value);
+      renderFeeds(elements, value);
       break;
 
     case 'rss.posts':
-      renderingPosts(elements, value, i18nextInstance);
+      renderPosts(elements, value, i18nextInstance);
       break;
 
     default:
@@ -159,4 +159,4 @@ const view = (elements, i18nextInstance) => (path, value) => {
   }
 };
 
-export default view;
+export default render;
