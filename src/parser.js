@@ -8,7 +8,6 @@ export default (response) => {
   const feed = {
     feedTitle: feedTitle.textContent,
     feedDescription: feedDescription.textContent,
-    feedId: _.uniqueId('feed_'),
   };
   const items = doc.querySelectorAll('item');
   const posts = Array.from(items).map((item) => {

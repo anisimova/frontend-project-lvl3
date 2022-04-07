@@ -53,9 +53,9 @@ const app = (i18nextInstance) => {
     const formData = new FormData(e.target);
     const dataForm = Object.fromEntries(formData);
     state.form.enteredUrl = dataForm.url;
+    watchedState.form.processState = 'waiting';
     isValid(state.form.enteredUrl, state.form.addedUrls)
       .then(() => {
-        watchedState.form.processState = 'waiting';
         axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(state.form.enteredUrl)}`)
           .then((response) => {
             state.form.addedUrls.push(state.form.enteredUrl);
@@ -85,13 +85,13 @@ const app = (i18nextInstance) => {
             const addedPostLinks = state.rss.posts.map(({ itemLink }) => itemLink);
             const newPosts = posts.filter(({ itemLink }) => !addedPostLinks.includes(itemLink));
             watchedState.rss.posts = state.rss.posts.concat(newPosts);
+            update();
           })
           .catch((err) => {
             watchedState.form.processState = 'error';
             watchedState.form.errors = err.name;
           });
       });
-      update();
     }, 5000);
   };
   update();
