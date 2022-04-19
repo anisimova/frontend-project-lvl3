@@ -11,6 +11,10 @@ export default {
       buttons: {
         viewing: 'Просмотр',
       },
+      headers: {
+        feeds: 'Фиды',
+        posts: 'Посты',
+      },
     },
   },
 };

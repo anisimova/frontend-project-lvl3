@@ -2,9 +2,11 @@ import * as yup from 'yup';
 import onChange from 'on-change';
 import i18n from 'i18next';
 import axios from 'axios';
+import _ from 'lodash';
 import resources from './locales/ru.js';
 import parser from './parser.js';
 import render from './render.js';
+import generateRequestLink from './utils.js';
 
 const app = (i18nextInstance) => {
   yup.setLocale({
@@ -29,7 +31,6 @@ const app = (i18nextInstance) => {
     modalBody: document.querySelector('.modal-body'),
     modalUrl: document.querySelector('.modal-footer .full-article'),
   };
-  // console.log(elements.rssUrl);
   const state = {
     form: {
       enteredUrl: '',
@@ -46,7 +47,7 @@ const app = (i18nextInstance) => {
     },
   };
 
-  const watchedState = onChange(state, render(elements, i18nextInstance));
+  const watchedState = onChange(state, render(elements, i18nextInstance, state));
 
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -56,12 +57,13 @@ const app = (i18nextInstance) => {
     watchedState.form.processState = 'waiting';
     isValid(state.form.enteredUrl, state.form.addedUrls)
       .then(() => {
-        axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(state.form.enteredUrl)}`)
+        axios.get(generateRequestLink(state.form.enteredUrl))
           .then((response) => {
             state.form.addedUrls.push(state.form.enteredUrl);
             const { feed, posts } = parser(response);
             feed.rssUrl = state.form.enteredUrl;
-            watchedState.rss.posts = state.rss.posts.concat(posts);
+            const postsWithId = posts.map((post) => _.merge(post, { itemId: _.uniqueId('post_') }));
+            watchedState.rss.posts = state.rss.posts.concat(postsWithId);
             watchedState.rss.feeds = state.rss.feeds.concat(feed);
             watchedState.form.processState = 'success';
           })
@@ -78,20 +80,16 @@ const app = (i18nextInstance) => {
   });
   const update = () => {
     setTimeout(() => {
-      state.rss.feeds.forEach(({ rssUrl }) => {
-        axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(rssUrl)}`)
-          .then((response) => {
-            const { posts } = parser(response);
-            const addedPostLinks = state.rss.posts.map(({ itemLink }) => itemLink);
-            const newPosts = posts.filter(({ itemLink }) => !addedPostLinks.includes(itemLink));
-            watchedState.rss.posts = state.rss.posts.concat(newPosts);
-            update();
-          })
-          .catch((err) => {
-            watchedState.form.processState = 'error';
-            watchedState.form.errors = err.name;
-          });
-      });
+      const promises = state.rss.feeds.map(({ rssUrl }) => axios.get(generateRequestLink(rssUrl))
+        .then((response) => {
+          const { posts } = parser(response);
+          const addedPostLinks = state.rss.posts.map(({ itemLink }) => itemLink);
+          const newPosts = posts.filter(({ itemLink }) => !addedPostLinks.includes(itemLink))
+            .map((post) => _.merge(post, { itemId: _.uniqueId('post_') }));
+          watchedState.rss.posts = state.rss.posts.concat(newPosts);
+        }));
+      const promise = Promise.all(promises);
+      promise.then(() => setTimeout(update, 5000));
     }, 5000);
   };
   update();
@@ -99,10 +97,7 @@ const app = (i18nextInstance) => {
     e.preventDefault();
     const clickedPost = state.rss.posts.filter(({ itemId }) => itemId === e.target.dataset.id);
     watchedState.modalIdPost = clickedPost;
-    watchedState.rss.posts = state.rss.posts.map((post) => {
-      if (post.itemId === e.target.dataset.id) return { ...post, read: true };
-      return post;
-    });
+    watchedState.rss.readPostsId = state.rss.readPostsId.concat(e.target.dataset.id);
   });
 };
 const runApp = () => {

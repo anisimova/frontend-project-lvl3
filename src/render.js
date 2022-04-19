@@ -40,7 +40,7 @@ const renderErrors = (elements, err, i18nextInstance) => {
   const feedbackElement = elements.feedback;
   feedbackElement.textContent = i18nextInstance.t(`feedback.${err}`);
 };
-const renderBlockFeeds = (feeds) => {
+const renderBlockFeeds = (feeds, i18nextInstance) => {
   if (document.querySelector('.feeds .list-group')) return document.querySelector('.feeds .list-group');
   const cardFeeds = document.createElement('div');
   cardFeeds.classList.add('card', 'border-0');
@@ -48,7 +48,7 @@ const renderBlockFeeds = (feeds) => {
   cardTitleFeeds.classList.add('card-body');
   const titleFeeds = document.createElement('h2');
   titleFeeds.classList.add('card-title', 'h4');
-  titleFeeds.textContent = 'Фиды';
+  titleFeeds.textContent = i18nextInstance.t('headers.feeds');
   const listFeeds = document.createElement('ul');
   listFeeds.classList.add('list-group', 'border-0', 'rounded-0');
   feeds.prepend(cardFeeds);
@@ -57,7 +57,7 @@ const renderBlockFeeds = (feeds) => {
   cardFeeds.append(listFeeds);
   return listFeeds;
 };
-const renderBlockPosts = (posts) => {
+const renderBlockPosts = (posts, i18nextInstance) => {
   if (document.querySelector('.posts .list-group')) return document.querySelector('.posts .list-group');
   const cardPosts = document.createElement('div');
   cardPosts.classList.add('card', 'border-0');
@@ -65,7 +65,7 @@ const renderBlockPosts = (posts) => {
   cardTitlePosts.classList.add('card-body');
   const titlePosts = document.createElement('h2');
   titlePosts.classList.add('card-title', 'h4');
-  titlePosts.textContent = 'Посты';
+  titlePosts.textContent = i18nextInstance.t('headers.posts');
   const listPosts = document.createElement('ul');
   listPosts.classList.add('list-group', 'border-0', 'rounded-0');
   posts.prepend(cardPosts);
@@ -74,8 +74,8 @@ const renderBlockPosts = (posts) => {
   cardPosts.append(listPosts);
   return listPosts;
 };
-const renderFeeds = ({ feeds }, allFeeds) => {
-  const view = renderBlockFeeds(feeds);
+const renderFeeds = ({ feeds }, allFeeds, i18nextInstance) => {
+  const view = renderBlockFeeds(feeds, i18nextInstance);
   view.textContent = '';
   allFeeds.forEach(({ feedTitle, feedDescription }) => {
     const listItem = document.createElement('li');
@@ -91,14 +91,14 @@ const renderFeeds = ({ feeds }, allFeeds) => {
     listItem.append(listItemDescription);
   });
 };
-const renderPosts = ({ posts }, allPosts, i18nextInstance) => {
-  const view = renderBlockPosts(posts);
+const renderPosts = ({ posts }, allPosts, i18nextInstance, state) => {
+  const view = renderBlockPosts(posts, i18nextInstance);
   view.textContent = '';
   allPosts.forEach((post) => {
     const postItem = document.createElement('li');
     postItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
     const postItemLink = document.createElement('a');
-    if (post.read) {
+    if (state.rss.readPostsId.includes(post.itemId)) {
       postItemLink.classList.add('fw-normal', 'link-secondary');
     } else {
       postItemLink.classList.add('fw-bold');
@@ -132,7 +132,14 @@ const renderModal = (elements, post) => {
   linkFullPost.href = post[0].itemLink;
 };
 
-const render = (elements, i18nextInstance) => (path, value) => {
+const renderReadPosts = (elements, posts) => {
+  posts.forEach((postId) => {
+    const post = document.querySelector(`a[data-id="${postId}"]`);
+    post.classList.remove('fw-bold');
+    post.classList.add('fw-normal', 'link-secondary');
+  });
+};
+const render = (elements, i18nextInstance, state) => (path, value) => {
   switch (path) {
     case 'form.processState':
       handleProcessState(elements, value, i18nextInstance);
@@ -147,11 +154,15 @@ const render = (elements, i18nextInstance) => (path, value) => {
       break;
 
     case 'rss.feeds':
-      renderFeeds(elements, value);
+      renderFeeds(elements, value, i18nextInstance);
       break;
 
     case 'rss.posts':
-      renderPosts(elements, value, i18nextInstance);
+      renderPosts(elements, value, i18nextInstance, state);
+      break;
+
+    case 'rss.readPostsId':
+      renderReadPosts(elements, value);
       break;
 
     default:

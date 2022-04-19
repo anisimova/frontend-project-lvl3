@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 export default (response) => {
   const parser = new DOMParser();
   const doc = parser.parseFromString(response.data.contents, 'application/xml');
@@ -18,7 +16,6 @@ export default (response) => {
       itemTitle: itemTitle.textContent,
       itemDescription: itemDescription.textContent,
       itemLink: itemLink.textContent,
-      itemId: _.uniqueId('post_'),
     };
   }).reverse();
   return { feed, posts };
